@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room - Flask Chat App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #ffa900;
+            color: white;
+            border-bottom: none;
+        }
+        .messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #ffffff;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 70%;
+        }
+        .message.own {
+            background-color: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+        .message.other {
+            background-color: #e9ecef;
+            color: #333;
+        }
+        .input-group .form-control {
+            border-radius: 20px 0 0 20px;
+        }
+        .btn-send {
+            border-radius: 0 20px 20px 0;
+            background-color: #ffa900;
+            border-color: #ffa900;
+        }
+        .btn-send:hover {
+            background-color: #e69500;
+            border-color: #e69500;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-brand, .navbar-nav .nav-link {
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Flask Chat App</a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">Welcome, {{ current_user.username }}!</span>
+                <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container chat-container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Chat Room</h5>
+                        <small class="text-muted">Real-time messaging</small>
+                    </div>
+                    <div class="card-body messages" id="messages"></div>
+                    <div class="card-footer">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="message" placeholder="Type your message..." required>
+                            <button class="btn btn-send" id="send">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var socket = io();
+            socket.on('connect', function(){
+                socket.send("User Connected!");
+            });
+
+            socket.on('message', function(data){
+                var messageClass = data.includes(':') ? 'other' : 'system';
+                if (data.startsWith('{{ current_user.username }}:')) {
+                    messageClass = 'own';
+                }
+                $('#messages').append($('<div class="message ' + messageClass + '">').text(data));
+                $('#messages').scrollTop($('#messages')[0].scrollHeight);
+            });
+
+            $('#send').on('click', function(){
+                var message = $('#message').val().trim();
+                if (message) {
+                    socket.send(message);
+                    $('#message').val('');
+                }
+            });
+
+            $('#message').on('keypress', function(e){
+                if (e.which == 13) {
+                    $('#send').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
