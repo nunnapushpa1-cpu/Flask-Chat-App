@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
@@ -219,7 +221,7 @@ if __name__ == "__main__":
 
     socketio.run(
         app,
-        host="127.0.0.1",
-        port=5002,
-        debug=True
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        debug=False
     )
