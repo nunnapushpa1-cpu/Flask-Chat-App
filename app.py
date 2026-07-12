@@ -23,7 +23,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode="threading")
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
