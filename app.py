@@ -49,6 +49,8 @@ class User(UserMixin, db.Model):
         db.String(255),
         nullable=False
     )
+with app.app_context():
+    db.create_all()
 
 
 @login_manager.user_loader
