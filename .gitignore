@@ -3,3 +3,5 @@ instance/
 .env
 .vscode/
 *.pyc
+venv/
+*.sqlite3
