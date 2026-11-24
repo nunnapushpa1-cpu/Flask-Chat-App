@@ -23,7 +23,14 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
-socketio = SocketIO(app, async_mode="threading")
+
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    async_mode="threading",
+    logger=True,
+    engineio_logger=True
+)
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -109,7 +116,12 @@ class LoginForm(FlaskForm):
 
 @socketio.on("message")
 def handle_message(message):
+    print("Received:", message)
+    print("Authenticated:", current_user.is_authenticated)
+
     if current_user.is_authenticated:
+        print("Username:", current_user.username)
+
         if message.strip():
             send(
                 f"{current_user.username}: {message}",

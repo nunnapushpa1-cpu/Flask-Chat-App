@@ -100,8 +100,9 @@
     <script type="text/javascript">
         $(document).ready(function(){
             var socket = io();
-            socket.on('connect', function(){
-                socket.send("User Connected!");
+            socket.on('connect', function () 
+            {
+                console.log("Connected:", socket.id);
             });
 
             socket.on('message', function(data){
